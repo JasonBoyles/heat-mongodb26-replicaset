@@ -1,0 +1,17 @@
+DEPENDENCIES
+  apt (~> 2.4.0)
+  mongodb
+    git: https://github.com/ryandub/chef-mongodb.git
+    revision: 8218e0bcc9474724f57554300589c7e90f5cf4cf
+    ref: 8218e0b
+  yum
+  yum-epel
+
+GRAPH
+  apt (2.4.0)
+  mongodb (0.12.0)
+    apt (>= 1.8.2)
+    yum (>= 0.0.0)
+  yum (3.2.2)
+  yum-epel (0.4.0)
+    yum (~> 3.0)
