@@ -91,7 +91,8 @@ resources:
       kitchen: { get_param: kitchen }
       chef_version: { get_param: chef_version }
       node:
-        run_list: ["recipe[mongodb::default]"]
+        run_list: [ "recipe[mongodb::10gen_repo]",
+                    "recipe[mongodb::default]" ]
 
 outputs:
   private_key:
@@ -100,4 +101,4 @@ outputs:
 
   server_public_ip:
     value: { get_attr: [mongodb_initial_server, accessIPv4] }
-    description: "Server IPs"
+    description: "Server IP"
