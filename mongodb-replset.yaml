@@ -5,7 +5,7 @@ description: |
   application deployed from a git repo
 
 parameters:
-  server_hostnames:
+  server_hostname:
     label: Server Hostnames
     description: Defines how the server will be named.
     type: string
@@ -53,7 +53,13 @@ parameters:
     description: |
       Location of the child template to use for the Rails application servers
     type: string
-    default: https://raw.githubusercontent.com/JasonBoyles/heat-mongodb-replicaset/master/mongodb-replset-peers.yaml
+    default: http://drop.duncancreek.net/mongodb-replset-peers.yaml
+#    default: https://raw.githubusercontent.com/JasonBoyles/heat-mongodb-replicaset/master/mongodb-replset-peers.yaml
+
+  peer_server_count:
+    label: number of additional peer servers to build
+    type: number
+    default: 2
 
   kitchen:
     description: "URL for a git repo containing required cookbooks"
@@ -63,19 +69,34 @@ parameters:
   chef_version:
     description: Version of chef client to use
     type: string
-    default: 11.12.8
+    default: 10.24.0
 
 resources:
+
   ssh_key:
     type: "OS::Nova::KeyPair"
     properties:
       name: { get_param: "OS::stack_id" }
       save_private_key: true
 
+  mongodb_peer_servers:
+    type: "OS::Heat::ResourceGroup"
+    properties:
+      count: { get_param: peer_server_count }
+      resource_def:
+        type: { get_param: child_template }
+        properties:
+          server_hostname: { get_param: server_hostname }
+          image: { get_param: image }
+          flavor: { get_param: flavor }
+          ssh_key: { get_resource: ssh_key }
+          ssh_private_key: { get_attr: [ssh_key, private_key] }
+          kitchen: { get_param: kitchen }
+
   mongodb_initial_server:
     type: "Rackspace::Cloud::Server"
     properties:
-      name: { get_param: server_hostnames }
+      name: { get_param: server_hostname }
       flavor: { get_param: flavor }
       image: { get_param: image }
       key_name: { get_resource: ssh_key }
@@ -83,7 +104,9 @@ resources:
 
   server_setup:
     type: "OS::Heat::ChefSolo"
-    depends_on: mongodb_initial_server
+    depends_on:
+    - mongodb_initial_server
+    - mongodb_peer_servers
     properties:
       username: root
       private_key: { get_attr: [ssh_key, private_key] }
@@ -91,8 +114,12 @@ resources:
       kitchen: { get_param: kitchen }
       chef_version: { get_param: chef_version }
       node:
+        mongodb:
+          bind_ip: { get_attr: [mongodb_initial_server, privateIPv4] }
+          use_fqdn: false
+          replicaset_members: { get_attr: [mongodb_peer_servers, privateIPv4] }
         run_list: [ "recipe[mongodb::10gen_repo]",
-                    "recipe[mongodb::default]" ]
+                    "recipe[mongodb::replicaset]" ]
 
 outputs:
   private_key:
@@ -102,3 +129,7 @@ outputs:
   server_public_ip:
     value: { get_attr: [mongodb_initial_server, accessIPv4] }
     description: "Server IP"
+
+  peer_private_ips:
+    value: { get_attr: [mongodb_peer_servers, privateIPv4] }
+    description: "peer private IPs"
