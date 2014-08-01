@@ -2,9 +2,9 @@ DEPENDENCIES
   apt (~> 2.4.0)
   firewall
   mongodb
-    git: https://github.com/ryandub/chef-mongodb.git
-    revision: 8218e0bcc9474724f57554300589c7e90f5cf4cf
-    ref: 8218e0b
+    git: https://github.com/JasonBoyles/chef-mongodb.git
+    revision: 57129fc4f7609c3a8647abbddcb15eea011ec319
+    ref: jgb-rem
   yum
   yum-epel
 

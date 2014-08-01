@@ -5,5 +5,5 @@ cookbook 'yum'
 cookbook 'yum-epel'
 cookbook 'firewall'
 cookbook 'mongodb',
-  :git => 'https://github.com/ryandub/chef-mongodb.git',
-  :ref => '8218e0bcc9474724f57554300589c7e90f5cf4cf'
+  :git => 'https://github.com/JasonBoyles/chef-mongodb.git',
+  :ref => 'jgb-remove-arbiter'
