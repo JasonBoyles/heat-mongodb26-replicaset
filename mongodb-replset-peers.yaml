@@ -98,8 +98,13 @@ resources:
         apt:
           compile_time_update: true
         mongodb:
+          cluster_name: mongodb
           bind_ip: { get_attr: [mongodb_peer_server, privateIPv4] }
           use_fqdn: false
+          auto_configure:
+            replicaset: false
+          config:
+            replset: myreplset
         run_list: [ "recipe[apt]",
                     "recipe[build-essential]",
                     "recipe[mongodb::10gen_repo]",
