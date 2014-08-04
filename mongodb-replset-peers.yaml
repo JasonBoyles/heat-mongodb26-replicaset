@@ -96,7 +96,9 @@ resources:
         mongodb:
           bind_ip: { get_attr: [mongodb_peer_server, privateIPv4] }
           use_fqdn: false
-        run_list: [ "recipe[mongodb::10gen_repo]",
+        run_list: [ "recipe[apt]",
+                    "recipe[build-essential]",
+                    "recipe[mongodb::10gen_repo]",
                     "recipe[mongodb::replicaset]" ]
 
 outputs:
