@@ -9,7 +9,7 @@ parameters:
     label: Server Hostnames
     description: Defines how the server will be named.
     type: string
-    default: 'mongo-%index%'
+    default: 'mongodb'
 
   image:
     label: Operating System
@@ -57,9 +57,9 @@ parameters:
 #    default: https://raw.githubusercontent.com/JasonBoyles/heat-mongodb-replicaset/master/mongodb-replset-peers.yaml
 
   peer_server_count:
-    label: number of additional peer servers to build
+    label: number of nodes in the cluster
     type: number
-    default: 2
+    default: 3
 
   kitchen:
     description: "URL for a git repo containing required cookbooks"
@@ -86,36 +86,30 @@ resources:
       resource_def:
         type: { get_param: child_template }
         properties:
-          server_hostname: { get_param: server_hostname }
+          server_hostname:
+            str_replace:
+              template: '%name%-0%index%'
+              params:
+                '%name%': { get_param: server_hostname }
           image: { get_param: image }
           flavor: { get_param: flavor }
           ssh_key: { get_resource: ssh_key }
           ssh_private_key: { get_attr: [ssh_key, private_key] }
           kitchen: { get_param: kitchen }
 
-  mongodb_initial_server:
-    type: "Rackspace::Cloud::Server"
-    properties:
-      name: { get_param: server_hostname }
-      flavor: { get_param: flavor }
-      image: { get_param: image }
-      key_name: { get_resource: ssh_key }
-      config_drive: "true"
-
   server_setup:
     type: "OS::Heat::ChefSolo"
     depends_on:
-    - mongodb_initial_server
     - mongodb_peer_servers
     properties:
       username: root
       private_key: { get_attr: [ssh_key, private_key] }
-      host: { get_attr: [mongodb_initial_server, accessIPv4] }
+      host: { get_attr: [mongodb_peer_servers, accessIPv4, 0] }
       kitchen: { get_param: kitchen }
       chef_version: { get_param: chef_version }
       node:
         mongodb:
-          bind_ip: { get_attr: [mongodb_initial_server, privateIPv4] }
+          bind_ip: { get_attr: [mongodb_peer_servers, privateIPv4, 0] }
           use_fqdn: false
           replicaset_members: { get_attr: [mongodb_peer_servers, privateIPv4] }
         run_list: [ "recipe[mongodb::10gen_repo]",
@@ -126,10 +120,6 @@ outputs:
     value: { get_attr: [ssh_key, private_key] }
     description: "SSH Private Key"
 
-  server_public_ip:
-    value: { get_attr: [mongodb_initial_server, accessIPv4] }
-    description: "Server IP"
-
-  peer_private_ips:
-    value: { get_attr: [mongodb_peer_servers, privateIPv4] }
-    description: "peer private IPs"
+  server_public_ips:
+    value: { get_attr: [mongodb_peer_servers, accessIPv4] }
+    description: "Server IPs"

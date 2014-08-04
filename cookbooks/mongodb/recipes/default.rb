@@ -19,30 +19,30 @@
 # limitations under the License.
 #
 
-package node[:mongodb][:package_name] do
-  action :install
-  version node[:mongodb][:package_version]
+include_recipe 'mongodb::install'
+
+# allow mongodb_instance to run if recipe isn't included
+allow_mongodb_instance_run = true
+conflicting_recipes = %w(mongodb::replicaset mongodb::shard mongodb::configserver mongodb::mongos mongodb::mms_agent)
+chef_major_version = Chef::VERSION.split('.').first.to_i
+if chef_major_version < 11
+  conflicting_recipes.each do |recipe|
+    allow_mongodb_instance_run &&= false if node.recipe?(recipe)
+  end
+else
+  conflicting_recipes.each do |recipe|
+    allow_mongodb_instance_run &&= false if node.run_context.loaded_recipe?(recipe)
+  end
 end
 
-needs_mongo_gem = (node.recipe?("mongodb::replicaset") or node.recipe?("mongodb::mongos"))
-
-if needs_mongo_gem
-  # install the mongo ruby gem at compile time to make it globally available
-  gem_package 'mongo' do
-    action :nothing
-  end.run_action(:install)
-  Gem.clear_paths
-end
-
-if node.recipe?("mongodb::default") or node.recipe?("mongodb")
-  # configure default instance
-  mongodb_instance "mongodb" do
-    mongodb_type "mongod"
-    bind_ip      node['mongodb']['bind_ip']
-    port         node['mongodb']['port']
-    logpath      node['mongodb']['logpath']
-    dbpath       node['mongodb']['dbpath']
-    enable_rest  node['mongodb']['enable_rest']
-    smallfiles   node['mongodb']['smallfiles']
+if allow_mongodb_instance_run
+  mongodb_instance node['mongodb']['instance_name'] do
+    mongodb_type 'mongod'
+    bind_ip      node['mongodb']['config']['bind_ip']
+    port         node['mongodb']['config']['port']
+    logpath      node['mongodb']['config']['logpath']
+    dbpath       node['mongodb']['config']['dbpath']
+    enable_rest  node['mongodb']['config']['rest']
+    smallfiles   node['mongodb']['config']['smallfiles']
   end
 end

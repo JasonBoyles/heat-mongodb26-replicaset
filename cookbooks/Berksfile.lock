@@ -2,18 +2,27 @@ DEPENDENCIES
   apt (~> 2.4.0)
   firewall
   mongodb
-    git: https://github.com/JasonBoyles/chef-mongodb.git
-    revision: 57129fc4f7609c3a8647abbddcb15eea011ec319
-    ref: jgb-rem
+    git: https://github.com/edelight/chef-mongodb.git
+    revision: 8c593917a228752d877b76b3c2995b6d6b1ffbdb
   yum
   yum-epel
 
 GRAPH
   apt (2.4.0)
+  build-essential (2.0.4)
   firewall (0.11.8)
-  mongodb (0.12.0)
+  mongodb (0.16.1)
     apt (>= 1.8.2)
-    yum (>= 0.0.0)
+    python (>= 0.0.0)
+    runit (>= 1.5.0)
+    yum (>= 3.0.0)
+  python (1.4.6)
+    build-essential (>= 0.0.0)
+    yum-epel (>= 0.0.0)
+  runit (1.5.10)
+    build-essential (>= 0.0.0)
+    yum (~> 3.0)
+    yum-epel (>= 0.0.0)
   yum (3.2.2)
   yum-epel (0.4.0)
     yum (~> 3.0)
