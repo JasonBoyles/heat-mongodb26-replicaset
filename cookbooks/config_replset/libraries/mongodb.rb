@@ -18,7 +18,7 @@ class Chef
 
       cmd['replSetInitiate'] = {
            _id: name,
-           members: rs_members
+           members: rs_member_ips
       }
 
       result = admin.command(cmd, :check_response => false)
