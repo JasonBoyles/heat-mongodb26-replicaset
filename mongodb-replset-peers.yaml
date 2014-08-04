@@ -105,7 +105,7 @@ resources:
           auto_configure:
             replicaset: false
           config:
-            replset: myreplset
+            replSet: myreplset
         run_list: [ "recipe[apt]",
                     "recipe[build-essential]",
                     "recipe[mongodb::10gen_repo]",
