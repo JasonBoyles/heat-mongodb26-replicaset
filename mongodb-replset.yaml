@@ -98,23 +98,24 @@ resources:
           kitchen: { get_param: kitchen }
           chef_version: { get_param: chef_version }
 
-#  server_setup:
-#    type: "OS::Heat::ChefSolo"
-#    depends_on:
-#    - mongodb_peer_servers
-#    properties:
-#      username: root
-#      private_key: { get_attr: [ssh_key, private_key] }
-#      host: { get_attr: [mongodb_peer_servers, accessIPv4, 0] }
-#      kitchen: { get_param: kitchen }
-#      chef_version: { get_param: chef_version }
-#      node:
-#        mongodb:
-#          bind_ip: { get_attr: [mongodb_peer_servers, privateIPv4, 0] }
-#          use_fqdn: false
-#          replicaset_members: { get_attr: [mongodb_peer_servers, privateIPv4] }
-#        run_list: [ "recipe[mongodb::10gen_repo]",
-#                    "recipe[mongodb::replicaset]" ]
+  server_setup:
+    type: "OS::Heat::ChefSolo"
+    depends_on:
+    - mongodb_peer_servers
+    properties:
+      username: root
+      private_key: { get_attr: [ssh_key, private_key] }
+      host: { get_attr: [mongodb_peer_servers, accessIPv4, 0] }
+      kitchen: { get_param: kitchen }
+      chef_version: { get_param: chef_version }
+      node:
+        mongodb:
+          bind_ip: { get_attr: [mongodb_peer_servers, privateIPv4, 0] }
+          use_fqdn: false
+          replicaset_members: { get_attr: [mongodb_peer_servers, privateIPv4] }
+          config:
+            replset: myreplset
+        run_list: [ "recipe[config_replset]" ]
 
 outputs:
   private_key:

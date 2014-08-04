@@ -98,6 +98,7 @@ resources:
         apt:
           compile_time_update: true
         mongodb:
+          is_replicaset: true
           cluster_name: mongodb
           bind_ip: { get_attr: [mongodb_peer_server, privateIPv4] }
           use_fqdn: false
