@@ -93,6 +93,10 @@ resources:
       kitchen: { get_param: kitchen }
       chef_version: { get_param: chef_version }
       node:
+        build-essential:
+          compile_time: true
+        apt:
+          compile_time_update: true
         mongodb:
           bind_ip: { get_attr: [mongodb_peer_server, privateIPv4] }
           use_fqdn: false
