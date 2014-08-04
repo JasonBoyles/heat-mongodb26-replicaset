@@ -1,5 +1,6 @@
 DEPENDENCIES
   apt (~> 2.4.0)
+  build-essential
   firewall
   mongodb
     git: https://github.com/edelight/chef-mongodb.git
