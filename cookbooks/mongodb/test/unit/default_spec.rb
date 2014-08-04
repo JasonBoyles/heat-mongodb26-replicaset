@@ -4,7 +4,7 @@ require 'fauxhai'
 
 describe 'mongodb::default' do
   let(:chef_run) do
-    runner = ChefSpec::Runner.new(
+    ChefSpec::Runner.new(
       :platform => 'ubuntu',
       :version => '12.04'
       )
@@ -12,8 +12,14 @@ describe 'mongodb::default' do
 
   it 'should install and enable mongodb' do
     chef_run.converge(described_recipe)
-    chef_run.should enable_service 'mongodb'
-    chef_run.should include_recipe('mongodb::install')
+    expect(chef_run).to enable_service 'mongodb'
+    expect(chef_run).to include_recipe('mongodb::install')
+  end
+
+  it 'should disable logpath when syslog is set' do
+    chef_run.node.set.mongodb.config.syslog = true
+    chef_run.converge(described_recipe)
+    expect(chef_run).to_not create_directory('/var/log/mongodb')
   end
 
   it 'should be able to set logpath to nil, and wont create' do

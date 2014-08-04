@@ -20,6 +20,7 @@ template node['mongodb']['dbconfig_file'] do
   variables(
     :config => node['mongodb']['config']
   )
+  helpers MongoDBConfigHelpers
   action :create_if_missing
 end
 
@@ -52,7 +53,7 @@ case node['platform_family']
 when 'debian'
   # this options lets us bypass complaint of pre-existing init file
   # necessary until upstream fixes ENABLE_MONGOD/DB flag
-  packager_opts = '-o Dpkg::Options::="--force-confold"'
+  packager_opts = '-o Dpkg::Options::="--force-confold" --force-yes'
 when 'rhel'
   # Add --nogpgcheck option when package is signed
   # see: https://jira.mongodb.org/browse/SERVER-8770
