@@ -69,7 +69,7 @@ parameters:
   chef_version:
     description: Version of chef client to use
     type: string
-    default: 11.14.2
+    default: 11.14.0
 
 resources:
 
