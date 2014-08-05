@@ -29,7 +29,7 @@ instructions: |
   is up, chef will not run again, so it is safe to modify configurations.
 
   MongoDB has been installed via package. The configuration file for Mongo
-  is /etc/mongodb.conf. All data is stored in /var/lib/mongodb.
+  is /etc/mongod.conf. All data is stored in /var/lib/mongodb.
 
   #### Logging in via SSH
   The private key provided in the passwords section can be used to login as
