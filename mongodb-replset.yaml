@@ -21,7 +21,7 @@ parameter_groups:
   - kitchen
   - chef_version
   - child_template
-  
+
 
 parameters:
   server_hostname:
