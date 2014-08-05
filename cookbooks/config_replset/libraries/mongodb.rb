@@ -6,7 +6,7 @@ class Chef
       require 'rubygems'
       require 'mongo'
 
-      connection = Mongo::Connection.new('localhost', 27017, :op_timeout => 5, :slave_ok => true)
+      connection = Mongo::Connection.new('localhost', 27017, :op_timeout => 30, :slave_ok => true)
       admin = connection['admin']
       cmd = BSON::OrderedHash.new
 

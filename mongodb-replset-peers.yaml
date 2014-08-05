@@ -98,6 +98,12 @@ resources:
         apt:
           compile_time_update: true
         mongodb:
+          default_init_name: mongod
+          instance_name: mongod
+          dbconfig_file: /etc/mongod.conf
+          sysconfig:
+            DAEMON_OPTS: "--config /etc/mongod.conf"
+            CONFIGFILE: /etc/mongod.conf
           is_replicaset: true
           cluster_name: mongodb
           use_fqdn: false
@@ -105,7 +111,7 @@ resources:
             replicaset: false
           config:
             replSet: myreplset
-            bind_ip: { get_attr: [mongodb_peer_server, privateIPv4] }
+            bind_ip: 0.0.0.0     # { get_attr: [mongodb_peer_server, privateIPv4] }
         run_list: [ "recipe[apt]",
                     "recipe[build-essential]",
                     "recipe[mongodb::10gen_repo]",
